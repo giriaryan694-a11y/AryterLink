@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AryterLink</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080b10;--sf:#0d1117;--sf2:#111820;--bd:#1a2332;--bd2:#243040;
+  --ac:#00d4ff;--ac2:#7c3aed;--ac3:#00ff88;--ac4:#ff6b35;
+  --tx:#e2e8f0;--tx2:#94a3b8;--mu:#3a4a5c;
+  --er:#ff4d6d;--ok:#00ff88;--wn:#ffb800;
+  --fm:'Share Tech Mono',monospace;--fu:'Rajdhani',sans-serif;--r:10px;
+}
+body.eye{--bg:#1a1500;--sf:#201a00;--sf2:#261f00;--bd:#332800;--bd2:#403200;--ac:#ffd700;--ac2:#ff8c00;--ac3:#ffec6e;--tx:#fff8dc;--tx2:#c8b860;--mu:#5a4a20}
+body.light{--bg:#f0f4f8;--sf:#fff;--sf2:#f8fafc;--bd:#e2e8f0;--bd2:#cbd5e1;--ac:#0ea5e9;--ac2:#7c3aed;--ac3:#10b981;--tx:#1e293b;--tx2:#64748b;--mu:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:var(--fu);min-height:100vh;overflow-x:hidden;transition:background .3s}
+.gbg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,212,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.02) 1px,transparent 1px);background-size:50px 50px}
+body.eye .gbg{background-image:linear-gradient(rgba(255,215,0,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,215,0,.02) 1px,transparent 1px)}
+body.light .gbg{display:none}
+
+/* Topbar */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(8,11,16,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd);padding:0 22px;display:flex;align-items:center;justify-content:space-between;height:56px}
+body.light .topbar{background:rgba(255,255,255,.92)}
+.tlogo{font-family:var(--fm);font-size:1.1rem;color:var(--ac);letter-spacing:3px}
+.tright{display:flex;align-items:center;gap:9px}
+.tbtn{background:var(--sf2);border:1px solid var(--bd);color:var(--tx2);padding:5px 11px;border-radius:6px;cursor:pointer;font-family:var(--fm);font-size:.7rem;transition:all .2s}
+.tbtn:hover{border-color:var(--ac);color:var(--ac)}
+.lbtn{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:#ff4d6d;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:var(--fu);font-size:.8rem;font-weight:600;text-decoration:none;transition:all .2s}
+.lbtn:hover{background:rgba(255,77,109,.2)}
+
+/* Layout */
+.main{position:relative;z-index:1;padding:22px 20px;max-width:1400px;margin:0 auto}
+.stitle{font-family:var(--fm);font-size:.67rem;color:var(--ac);letter-spacing:4px;margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:9px}
+.stitle::before{content:'◈';opacity:.6}
+
+/* Tool Grid */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px;margin-bottom:26px}
+.tc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:15px 11px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;position:relative;overflow:hidden}
+.tc::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.04),transparent);opacity:0;transition:opacity .2s}
+.tc:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,212,255,.08)}
+.tc:hover::before{opacity:1}
+.tc:active{transform:none}
+.ti{font-size:1.75rem;line-height:1}
+.tn{font-weight:600;font-size:.8rem;color:var(--tx);letter-spacing:.3px}
+.td{font-size:.68rem;color:var(--tx2);line-height:1.3}
+
+/* Overlay / Panel */
+.ov{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.76);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:14px}
+.ov.on{display:flex}
+.panel{background:var(--sf);border:1px solid var(--bd2);border-radius:14px;width:100%;max-width:600px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:pi .18s ease}
+@keyframes pi{from{opacity:0;transform:scale(.96) translateY(8px)}}
+.ph{padding:15px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ph h2{font-family:var(--fu);font-size:1rem;font-weight:700;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.px{background:none;border:none;color:var(--tx2);font-size:1.2rem;cursor:pointer;padding:4px;transition:color .2s}
+.px:hover{color:var(--er)}
+.pb{padding:18px 20px;overflow-y:auto;flex:1}
+
+/* Forms */
+.fg{margin-bottom:13px}
+.fg label{display:block;font-family:var(--fm);font-size:.68rem;color:var(--tx2);letter-spacing:2px;margin-bottom:6px}
+.fg input,.fg textarea,.fg select{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px 11px;color:var(--tx);font-family:var(--fm);font-size:.86rem;outline:none;transition:border-color .2s}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--ac)}
+.fg textarea{resize:vertical;min-height:72px}
+
+/* Buttons */
+.btn{padding:8px 17px;border-radius:7px;border:none;cursor:pointer;font-family:var(--fu);font-weight:600;font-size:.86rem;letter-spacing:.7px;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.bp{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+.bp:hover{opacity:.9;transform:translateY(-1px)}
+.bs{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--ok)}
+.bs:hover{background:rgba(0,255,136,.18)}
+.bd_{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:var(--er)}
+.bd_:hover{background:rgba(255,77,109,.18)}
+.bw{background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.3);color:var(--wn)}
+.bw:hover{background:rgba(255,184,0,.18)}
+.bg{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+
+/* Result box */
+.rb{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:13px;margin-top:13px;font-family:var(--fm);font-size:.8rem;color:var(--tx);line-height:1.6}
+.rt{width:100%;border-collapse:collapse;font-size:.82rem}
+.rt td{padding:7px 10px;border-bottom:1px solid var(--bd)}
+.rt td:first-child{color:var(--tx2);font-size:.74rem;letter-spacing:.7px;width:44%}
+.rt td:last-child{color:var(--tx);font-weight:600}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.71rem;font-family:var(--fm)}
+.bg_g{background:rgba(0,255,136,.15);color:var(--ok);border:1px solid rgba(0,255,136,.2)}
+.bg_r{background:rgba(255,77,109,.15);color:var(--er);border:1px solid rgba(255,77,109,.2)}
+.bg_y{background:rgba(255,184,0,.15);color:var(--wn);border:1px solid rgba(255,184,0,.2)}
+.bg_b{background:rgba(0,212,255,.15);color:var(--ac);border:1px solid rgba(0,212,255,.2)}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sep{height:1px;background:var(--bd);margin:16px 0}
+
+/* Torch */
+.torch-wrap{text-align:center;padding:16px 0}
+.torch-btn{width:108px;height:108px;border-radius:50%;border:3px solid var(--bd);background:var(--sf2);cursor:pointer;font-size:2.7rem;transition:all .3s;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.torch-btn.on{border-color:#ffb800;background:rgba(255,184,0,.15);box-shadow:0 0 40px rgba(255,184,0,.4),0 0 80px rgba(255,184,0,.12)}
+.torch-st{font-family:var(--fm);font-size:.76rem;color:var(--tx2);letter-spacing:3px;margin-top:11px}
+
+/* Fingerprint result */
+.fp-result{margin-top:18px;border-radius:10px;padding:20px;text-align:center;border:1px solid var(--bd)}
+.fp-result.success{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.3)}
+.fp-result.failure{background:rgba(255,77,109,.08);border-color:rgba(255,77,109,.3)}
+.fp-result.pending{background:rgba(0,212,255,.06);border-color:rgba(0,212,255,.2)}
+.fp-icon{font-size:3rem;margin-bottom:10px}
+.fp-label{font-family:var(--fm);font-size:.82rem;letter-spacing:2px;margin-bottom:6px}
+.fp-label.success{color:var(--ok)}
+.fp-label.failure{color:var(--er)}
+.fp-label.pending{color:var(--ac)}
+.fp-sub{font-size:.76rem;color:var(--tx2);font-family:var(--fm)}
+
+/* Brightness */
+.bright-wrap{margin-top:16px}
+.bright-track{width:100%;height:8px;background:var(--bd2);border-radius:4px;position:relative;cursor:pointer;margin:14px 0}
+.bright-fill{height:100%;background:linear-gradient(90deg,var(--ac),#fff);border-radius:4px;transition:width .1s;pointer-events:none}
+.bright-val{font-family:var(--fm);font-size:1.4rem;text-align:center;color:var(--ac);margin:10px 0 4px}
+.bright-pct{font-family:var(--fm);font-size:.72rem;text-align:center;color:var(--tx2)}
+
+/* SMS */
+.sms-item{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:10px 12px;margin-bottom:8px}
+.sms-s{color:var(--ac);font-family:var(--fm);font-size:.81rem;font-weight:bold}
+.sms-t{color:var(--mu);font-size:.7rem;float:right;font-family:var(--fm)}
+.sms-b{margin-top:5px;font-size:.86rem;color:var(--tx);line-height:1.4;clear:both}
+
+/* Contacts */
+.ci{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--bd)}
+.ca{width:33px;height:33px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0}
+.cn{font-weight:600;font-size:.86rem}
+.cp{font-size:.74rem;color:var(--tx2);font-family:var(--fm)}
+
+/* WiFi */
+.wi{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--bd);font-size:.84rem}
+.wsig{font-family:var(--fm);font-size:.74rem;color:var(--tx2)}
+
+/* Map link */
+.mlink{display:inline-flex;align-items:center;gap:5px;color:var(--ac);font-family:var(--fm);font-size:.76rem;text-decoration:none;padding:4px 9px;border:1px solid var(--bd);border-radius:5px;margin-top:8px;transition:all .2s}
+.mlink:hover{border-color:var(--ac)}
+
+/* Terminal */
+.term-panel{display:flex;flex-direction:column;height:460px;max-height:72vh}
+.term-topbar{display:flex;align-items:center;justify-content:space-between;padding:7px 13px;background:#000;border-bottom:1px solid #1a2332;flex-shrink:0;border-radius:8px 8px 0 0}
+.term-cwd{font-family:var(--fm);font-size:.74rem;color:var(--ac);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 100px)}
+.term-btns{display:flex;gap:5px;flex-shrink:0}
+.tsmb{background:var(--sf2);border:1px solid var(--bd);color:var(--tx2);padding:3px 8px;border-radius:4px;cursor:pointer;font-family:var(--fm);font-size:.68rem;transition:all .2s}
+.tsmb:hover{border-color:var(--ac);color:var(--ac)}
+.term-out{flex:1;background:#000;padding:12px;font-family:var(--fm);font-size:.8rem;overflow-y:auto;line-height:1.55;word-break:break-all}
+.term-out .lc{color:var(--ac)} .term-out .lo{color:#c8ffd4} .term-out .le{color:#ff6b6b} .term-out .li{color:#6b7a8d}
+.term-prompt-row{display:flex;align-items:center;background:#060a0e;padding:8px 11px;border-top:1px solid #1a2332;gap:8px;flex-shrink:0;border-radius:0 0 8px 8px}
+.term-ps1{color:var(--ac);font-family:var(--fm);font-size:.88rem;white-space:nowrap;user-select:none}
+.term-input{flex:1;background:transparent;border:none;color:var(--ok);font-family:var(--fm);font-size:.86rem;outline:none;caret-color:var(--ok)}
+.term-go{background:var(--ac);border:none;color:#000;padding:5px 11px;border-radius:5px;cursor:pointer;font-family:var(--fm);font-size:.76rem;font-weight:bold}
+.term-go:hover{opacity:.85}
+
+/* Resource gallery */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px}
+.res-card{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;overflow:hidden;transition:all .2s}
+.res-card:hover{border-color:var(--ac);transform:translateY(-2px)}
+.res-thumb{width:100%;height:100px;object-fit:cover;display:block;background:var(--bd)}
+.res-audio-thumb{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;background:var(--sf);color:var(--tx2)}
+.res-info{padding:7px 9px}
+.res-name{font-family:var(--fm);font-size:.68rem;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.res-size{font-family:var(--fm);font-size:.63rem;color:var(--mu)}
+.res-actions{display:flex;gap:5px;margin-top:6px}
+.res-btn{flex:1;padding:4px 0;border-radius:4px;border:none;cursor:pointer;font-family:var(--fm);font-size:.67rem;transition:all .2s;text-align:center;text-decoration:none;display:block}
+.res-dl{background:rgba(0,212,255,.12);color:var(--ac);border:1px solid rgba(0,212,255,.2)}
+.res-dl:hover{background:rgba(0,212,255,.22)}
+.res-del{background:rgba(255,77,109,.1);color:var(--er);border:1px solid rgba(255,77,109,.2)}
+.res-del:hover{background:rgba(255,77,109,.2)}
+.res-empty{text-align:center;padding:32px;font-family:var(--fm);font-size:.8rem;color:var(--mu)}
+
+/* Toast notification */
+.xtoast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--sf);border:1px solid var(--bd2);border-radius:8px;padding:10px 15px;font-family:var(--fm);font-size:.77rem;color:var(--tx);box-shadow:0 8px 28px rgba(0,0,0,.5);animation:tin .18s ease;max-width:280px}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+.xtoast.ok{border-color:rgba(0,255,136,.4);color:var(--ok)}
+.xtoast.err{border-color:rgba(255,77,109,.4);color:var(--er)}
+
+.footer{text-align:center;padding:22px;font-family:var(--fm);font-size:.61rem;color:var(--mu);letter-spacing:3px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+
+@media(max-width:600px){
+  .topbar{padding:0 11px}.main{padding:14px 11px}
+  .tgrid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .tc{padding:11px 5px}.ti{font-size:1.5rem}.tn{font-size:.72rem}.td{display:none}
+  .panel{max-height:92vh}.term-panel{height:340px}
+}
+</style>
+</head>
+<body>
+<div class="gbg"></div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="tlogo">ARYTERLINK</div>
+  <div class="tright">
+    <button class="tbtn" onclick="cycleTheme()" id="themeBtn">🌙 DARK</button>
+    <a class="lbtn" href="/logout">LOGOUT</a>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="stitle">COMMUNICATION</div>
+  <div class="tgrid">
+    <div class="tc" onclick="op('sms')"><div class="ti">💬</div><div class="tn">SMS</div><div class="td">Read & send</div></div>
+    <div class="tc" onclick="op('calllog')"><div class="ti">📋</div><div class="tn">Call Log</div><div class="td">Call history</div></div>
+    <div class="tc" onclick="op('call')"><div class="ti">📞</div><div class="tn">Make Call</div><div class="td">Place call</div></div>
+    <div class="tc" onclick="op('contacts')"><div class="ti">👥</div><div class="tn">Contacts</div><div class="td">Phone contacts</div></div>
+  </div>
+
+  <div class="stitle">DEVICE CONTROL</div>
+  <div class="tgrid">
+    <div class="tc" onclick="op('torch')"><div class="ti">🔦</div><div class="tn">Torch</div><div class="td">Toggle light</div></div>
+    <div class="tc" onclick="op('battery')"><div class="ti">🔋</div><div class="tn">Battery</div><div class="td">Status & health</div></div>
+    <div class="tc" onclick="op('brightness')"><div class="ti">☀️</div><div class="tn">Brightness</div><div class="td">Set screen level</div></div>
+    <div class="tc" onclick="op('fingerprint')"><div class="ti">🫆</div><div class="tn">Fingerprint</div><div class="td">Auth via biometric</div></div>
+    <div class="tc" onclick="op('vibrate')"><div class="ti">📳</div><div class="tn">Vibrate</div><div class="td">Trigger vibration</div></div>
+    <div class="tc" onclick="op('wakelock')"><div class="ti">⚡</div><div class="tn">Wake Lock</div><div class="td">Keep awake</div></div>
+    <div class="tc" onclick="op('camera')"><div class="ti">📷</div><div class="tn">Camera</div><div class="td">Take photo</div></div>
+    <div class="tc" onclick="op('tts')"><div class="ti">🔊</div><div class="tn">TTS</div><div class="td">Text-to-speech</div></div>
+    <div class="tc" onclick="op('toast')"><div class="ti">🍞</div><div class="tn">Toast</div><div class="td">Android toast</div></div>
+    <div class="tc" onclick="op('audio')"><div class="ti">🎤</div><div class="tn">Record Audio</div><div class="td">Mic recording</div></div>
+  </div>
+
+  <div class="stitle">NETWORK & LOCATION</div>
+  <div class="tgrid">
+    <div class="tc" onclick="op('wifiinfo')"><div class="ti">📶</div><div class="tn">Wi-Fi Info</div><div class="td">Current network</div></div>
+    <div class="tc" onclick="op('wifiscan')"><div class="ti">🔍</div><div class="tn">Wi-Fi Scan</div><div class="td">Nearby APs</div></div>
+    <div class="tc" onclick="op('wifitoggle')"><div class="ti">📡</div><div class="tn">Wi-Fi Toggle</div><div class="td">Enable/disable</div></div>
+    <div class="tc" onclick="op('location')"><div class="ti">📍</div><div class="tn">GPS</div><div class="td">Coordinates</div></div>
+  </div>
+
+  <div class="stitle">DATA & SYSTEM</div>
+  <div class="tgrid">
+    <div class="tc" onclick="op('clipboard')"><div class="ti">📋</div><div class="tn">Clipboard</div><div class="td">Get / set</div></div>
+    <div class="tc" onclick="op('notification')"><div class="ti">🔔</div><div class="tn">Notification</div><div class="td">Post / remove</div></div>
+    <div class="tc" onclick="op('openurl')"><div class="ti">🌐</div><div class="tn">Open URL</div><div class="td">Launch browser</div></div>
+    <div class="tc" onclick="op('download')"><div class="ti">⬇️</div><div class="tn">Download</div><div class="td">Via Android</div></div>
+    <div class="tc" onclick="op('sensor')"><div class="ti">🧭</div><div class="tn">Sensors</div><div class="td">List sensors</div></div>
+  </div>
+
+  <div class="stitle">FILES</div>
+  <div class="tgrid">
+    <div class="tc" onclick="op('resources')"><div class="ti">🗂️</div><div class="tn">Resources</div><div class="td">Photos & audio</div></div>
+    <div class="tc" onclick="op('terminal')"><div class="ti">💻</div><div class="tn">Terminal</div><div class="td">Interactive shell</div></div>
+  </div>
+
+</div>
+
+<div class="footer">MADE BY ARYAN GIRI</div>
+
+<!-- ════════ PANELS ════════ -->
+
+<!-- SMS -->
+<div class="ov" id="p-sms"><div class="panel">
+  <div class="ph"><h2>💬 SMS</h2><button class="px" onclick="cl('sms')">✕</button></div>
+  <div class="pb">
+    <div class="bg">
+      <button class="btn bp" onclick="smsTab('read')">📥 Read SMS</button>
+      <button class="btn bs" onclick="smsTab('send')">📤 Send SMS</button>
+    </div>
+    <div id="sms-read" style="display:none;margin-top:14px">
+      <div class="fg"><label>LIMIT</label><input type="number" id="sms-limit" value="10" min="1" max="100"></div>
+      <button class="btn bp" onclick="loadSms()">🔄 Load</button>
+      <div id="sms-out" class="rb" style="display:none;padding:0;max-height:340px;overflow-y:auto"></div>
+    </div>
+    <div id="sms-send" style="display:none;margin-top:14px">
+      <div class="fg"><label>RECIPIENT</label><input type="tel" id="sms-to" placeholder="+91xxxxxxxxxx"></div>
+      <div class="fg"><label>MESSAGE</label><textarea id="sms-msg" placeholder="Type message..."></textarea></div>
+      <div id="sms-cc" style="font-size:.7rem;color:var(--tx2);font-family:var(--fm);margin-bottom:9px">0 chars</div>
+      <button class="btn bs" onclick="sendSms()">🚀 Send</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- Torch -->
+<div class="ov" id="p-torch"><div class="panel" style="max-width:320px">
+  <div class="ph"><h2>🔦 Torch</h2><button class="px" onclick="cl('torch')">✕</button></div>
+  <div class="pb">
+    <div class="torch-wrap">
+      <button class="torch-btn" id="torch-btn" onclick="toggleTorch()">🔦</button>
+      <div class="torch-st" id="torch-st">TAP TO TOGGLE</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Battery -->
+<div class="ov" id="p-battery"><div class="panel">
+  <div class="ph"><h2>🔋 Battery</h2><button class="px" onclick="cl('battery')">✕</button></div>
+  <div class="pb">
+    <button class="btn bp" onclick="loadBattery()">🔄 Refresh</button>
+    <div id="bat-out"></div>
+  </div>
+</div></div>
+
+<!-- Brightness -->
+<div class="ov" id="p-brightness"><div class="panel" style="max-width:440px">
+  <div class="ph"><h2>☀️ Screen Brightness</h2><button class="px" onclick="cl('brightness')">✕</button></div>
+  <div class="pb">
+    <div class="bright-wrap">
+      <div class="bright-val" id="bright-val">128</div>
+      <div class="bright-pct" id="bright-pct">50%</div>
+      <input type="range" id="bright-slider" min="0" max="255" value="128" style="width:100%;accent-color:var(--ac);margin:14px 0"
+             oninput="brightUpdate(this.value)">
+      <div class="bg" style="justify-content:center;margin-top:8px">
+        <button class="btn bp" style="padding:7px 14px" onclick="brightPreset(0)">🌑 Min</button>
+        <button class="btn bp" style="padding:7px 14px" onclick="brightPreset(64)">🌘 Low</button>
+        <button class="btn bp" style="padding:7px 14px" onclick="brightPreset(128)">🌗 Mid</button>
+        <button class="btn bp" style="padding:7px 14px" onclick="brightPreset(200)">🌕 High</button>
+        <button class="btn bp" style="padding:7px 14px" onclick="brightPreset(255)">☀️ Max</button>
+      </div>
+      <button class="btn bp" style="width:100%;margin-top:14px" onclick="setBrightness()">✅ Apply</button>
+    </div>
+    <div id="bright-out"></div>
+  </div>
+</div></div>
+
+<!-- Fingerprint -->
+<div class="ov" id="p-fingerprint"><div class="panel" style="max-width:420px">
+  <div class="ph"><h2>🫆 Fingerprint</h2><button class="px" onclick="cl('fingerprint')">✕</button></div>
+  <div class="pb">
+    <p style="color:var(--tx2);font-size:.88rem;margin-bottom:16px;line-height:1.5">Touch your fingerprint sensor on the phone when prompted. The result will appear below.</p>
+    <button class="btn bp" style="width:100%" id="fp-scan-btn" onclick="scanFingerprint()">🫆 Scan Fingerprint</button>
+    <div id="fp-out"></div>
+  </div>
+</div></div>
+
+<!-- Vibrate -->
+<div class="ov" id="p-vibrate"><div class="panel" style="max-width:360px">
+  <div class="ph"><h2>📳 Vibrate</h2><button class="px" onclick="cl('vibrate')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>DURATION (ms)</label><input type="number" id="vib-ms" value="1000" min="50" max="5000"></div>
+    <div class="fg" style="display:flex;align-items:center;gap:9px;margin-top:4px">
+      <input type="checkbox" id="vib-force" checked style="accent-color:var(--ac);width:15px;height:15px;cursor:pointer">
+      <label style="margin:0;cursor:pointer" for="vib-force">Force vibrate (even in silent mode)</label>
+    </div>
+    <div class="bg" style="margin-top:12px">
+      <button class="btn bp" onclick="vib(200)">Short</button>
+      <button class="btn bp" onclick="vib(500)">Medium</button>
+      <button class="btn bp" onclick="vib(1000)">Default</button>
+      <button class="btn bp" onclick="vib(2000)">Long</button>
+      <button class="btn bw" onclick="vib(null)">Custom ↑</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- Wake Lock -->
+<div class="ov" id="p-wakelock"><div class="panel" style="max-width:360px">
+  <div class="ph"><h2>⚡ Wake Lock</h2><button class="px" onclick="cl('wakelock')">✕</button></div>
+  <div class="pb">
+    <p style="color:var(--tx2);font-size:.86rem;margin-bottom:14px">Keep the device screen awake or release the lock.</p>
+    <div class="bg">
+      <button class="btn bs" onclick="wakeLock('lock')">🔒 Acquire</button>
+      <button class="btn bd_" onclick="wakeLock('unlock')">🔓 Release</button>
+    </div>
+    <div id="wl-out"></div>
+  </div>
+</div></div>
+
+<!-- Camera -->
+<div class="ov" id="p-camera"><div class="panel" style="max-width:400px">
+  <div class="ph"><h2>📷 Camera</h2><button class="px" onclick="cl('camera')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>CAMERA</label>
+      <select id="cam-id">
+        <option value="0">0 — Rear</option><option value="1">1 — Front</option>
+      </select>
+    </div>
+    <button class="btn bp" onclick="takePhoto()">📸 Capture</button>
+    <div id="cam-out"></div>
+  </div>
+</div></div>
+
+<!-- TTS -->
+<div class="ov" id="p-tts"><div class="panel">
+  <div class="ph"><h2>🔊 Text-to-Speech</h2><button class="px" onclick="cl('tts')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>ENGINE</label><select id="tts-engine"><option value="termux">Loading...</option></select></div>
+    <div class="fg"><label>TEXT</label><textarea id="tts-text" placeholder="Enter text to speak..."></textarea></div>
+    <div class="fg">
+      <label>SPEED &nbsp;<span id="tts-rv" style="color:var(--ac)">1.0×</span></label>
+      <input type="range" id="tts-rate" min="0.1" max="3.0" step="0.1" value="1.0" style="width:100%;accent-color:var(--ac);margin-top:4px"
+             oninput="document.getElementById('tts-rv').textContent=this.value+'×'">
+    </div>
+    <button class="btn bp" onclick="speak()">🗣 Speak</button>
+    <div id="tts-out"></div>
+  </div>
+</div></div>
+
+<!-- Toast -->
+<div class="ov" id="p-toast"><div class="panel" style="max-width:400px">
+  <div class="ph"><h2>🍞 Android Toast</h2><button class="px" onclick="cl('toast')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>MESSAGE</label><input type="text" id="toast-msg" placeholder="Toast text..."></div>
+    <div class="fg"><label>BG COLOR</label>
+      <select id="toast-bg">
+        <option value="gray">Gray</option><option value="red">Red</option>
+        <option value="green">Green</option><option value="blue">Blue</option>
+        <option value="black">Black</option>
+      </select>
+    </div>
+    <button class="btn bw" onclick="sendToast()">🍞 Show Toast</button>
+  </div>
+</div></div>
+
+<!-- Audio -->
+<div class="ov" id="p-audio"><div class="panel" style="max-width:400px">
+  <div class="ph"><h2>🎤 Record Audio</h2><button class="px" onclick="cl('audio')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>DURATION (seconds)</label><input type="number" id="audio-s" value="5" min="1" max="120"></div>
+    <button class="btn bd_" onclick="recordAudio()">⏺ Record</button>
+    <div id="audio-out"></div>
+  </div>
+</div></div>
+
+<!-- Call Log -->
+<div class="ov" id="p-calllog"><div class="panel">
+  <div class="ph"><h2>📋 Call Log</h2><button class="px" onclick="cl('calllog')">✕</button></div>
+  <div class="pb">
+    <button class="btn bp" onclick="loadCallLog()">🔄 Load</button>
+    <div id="clog-out"></div>
+  </div>
+</div></div>
+
+<!-- Call -->
+<div class="ov" id="p-call"><div class="panel" style="max-width:380px">
+  <div class="ph"><h2>📞 Make Call</h2><button class="px" onclick="cl('call')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>NUMBER</label><input type="tel" id="call-num" placeholder="+91xxxxxxxxxx"></div>
+    <button class="btn bs" onclick="makeCall()">📞 Call</button>
+    <div id="call-out"></div>
+  </div>
+</div></div>
+
+<!-- Contacts -->
+<div class="ov" id="p-contacts"><div class="panel">
+  <div class="ph"><h2>👥 Contacts</h2><button class="px" onclick="cl('contacts')">✕</button></div>
+  <div class="pb">
+    <div style="display:flex;gap:8px;margin-bottom:11px">
+      <input id="contact-q" placeholder="Search..." style="flex:1;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:8px 10px;color:var(--tx);font-family:var(--fm);font-size:.82rem;outline:none" oninput="filterContacts()">
+      <button class="btn bp" style="padding:8px 12px" onclick="loadContacts()">🔄</button>
+    </div>
+    <div id="contacts-out"></div>
+  </div>
+</div></div>
+
+<!-- Location -->
+<div class="ov" id="p-location"><div class="panel">
+  <div class="ph"><h2>📍 GPS Location</h2><button class="px" onclick="cl('location')">✕</button></div>
+  <div class="pb">
+    <button class="btn bp" onclick="loadLoc()">📡 Get Location</button>
+    <div id="loc-out"></div>
+  </div>
+</div></div>
+
+<!-- Clipboard -->
+<div class="ov" id="p-clipboard"><div class="panel">
+  <div class="ph"><h2>📋 Clipboard</h2><button class="px" onclick="cl('clipboard')">✕</button></div>
+  <div class="pb">
+    <button class="btn bp" onclick="getClip()">📥 Get</button>
+    <div id="clip-get-out"></div>
+    <div class="sep"></div>
+    <div class="fg"><label>SET TEXT</label><textarea id="clip-text" placeholder="Text to set..."></textarea></div>
+    <button class="btn bs" onclick="setClip()">📤 Set</button>
+  </div>
+</div></div>
+
+<!-- WiFi Info -->
+<div class="ov" id="p-wifiinfo"><div class="panel">
+  <div class="ph"><h2>📶 Wi-Fi Info</h2><button class="px" onclick="cl('wifiinfo')">✕</button></div>
+  <div class="pb">
+    <button class="btn bp" onclick="loadWifiInfo()">🔄 Refresh</button>
+    <div id="winfo-out"></div>
+  </div>
+</div></div>
+
+<!-- WiFi Scan -->
+<div class="ov" id="p-wifiscan"><div class="panel">
+  <div class="ph"><h2>🔍 Wi-Fi Scan</h2><button class="px" onclick="cl('wifiscan')">✕</button></div>
+  <div class="pb">
+    <button class="btn bp" onclick="loadWifiScan()">📡 Scan</button>
+    <div id="wscan-out"></div>
+  </div>
+</div></div>
+
+<!-- WiFi Toggle -->
+<div class="ov" id="p-wifitoggle"><div class="panel" style="max-width:360px">
+  <div class="ph"><h2>📡 Wi-Fi Toggle</h2><button class="px" onclick="cl('wifitoggle')">✕</button></div>
+  <div class="pb">
+    <div class="bg">
+      <button class="btn bs" onclick="wifiToggle(true)">✅ Enable</button>
+      <button class="btn bd_" onclick="wifiToggle(false)">❌ Disable</button>
+    </div>
+    <div id="wtog-out"></div>
+  </div>
+</div></div>
+
+<!-- Notification -->
+<div class="ov" id="p-notification"><div class="panel">
+  <div class="ph"><h2>🔔 Notification</h2><button class="px" onclick="cl('notification')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>TITLE</label><input type="text" id="notif-title" placeholder="Title"></div>
+    <div class="fg"><label>CONTENT</label><textarea id="notif-body" placeholder="Body..."></textarea></div>
+    <div class="fg"><label>ID</label><input type="number" id="notif-id" value="42"></div>
+    <div class="bg">
+      <button class="btn bs" onclick="postNotif()">🔔 Post</button>
+      <button class="btn bd_" onclick="removeNotif()">🗑 Remove</button>
+    </div>
+    <div id="notif-out"></div>
+  </div>
+</div></div>
+
+<!-- Open URL -->
+<div class="ov" id="p-openurl"><div class="panel" style="max-width:440px">
+  <div class="ph"><h2>🌐 Open URL</h2><button class="px" onclick="cl('openurl')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>URL</label><input type="url" id="ourl" placeholder="https://"></div>
+    <button class="btn bp" onclick="openUrl()">🚀 Open</button>
+  </div>
+</div></div>
+
+<!-- Download -->
+<div class="ov" id="p-download"><div class="panel" style="max-width:440px">
+  <div class="ph"><h2>⬇️ Download</h2><button class="px" onclick="cl('download')">✕</button></div>
+  <div class="pb">
+    <div class="fg"><label>URL</label><input type="url" id="dl-url" placeholder="https://example.com/file.zip"></div>
+    <div class="fg"><label>METHOD</label>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;margin:0;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:8px 13px;flex:1;transition:border-color .2s" id="dl-opt-termux">
+          <input type="radio" name="dl-method" value="termux" checked style="accent-color:var(--ac)"> <span style="font-size:.85rem">📱 termux-download</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;margin:0;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:8px 13px;flex:1;transition:border-color .2s" id="dl-opt-wget">
+          <input type="radio" name="dl-method" value="wget" style="accent-color:var(--ac)"> <span style="font-size:.85rem">🌐 wget</span>
+        </label>
+      </div>
+    </div>
+    <button class="btn bs" onclick="startDl()">⬇️ Download</button>
+    <div id="dl-out"></div>
+  </div>
+</div></div>
+
+<!-- Sensor -->
+<div class="ov" id="p-sensor"><div class="panel">
+  <div class="ph"><h2>🧭 Sensors</h2><button class="px" onclick="cl('sensor')">✕</button></div>
+  <div class="pb">
+    <button class="btn bp" onclick="loadSensors()">🔄 List</button>
+    <div id="sensor-out"></div>
+  </div>
+</div></div>
+
+<!-- Resources / Gallery -->
+<div class="ov" id="p-resources"><div class="panel" style="max-width:680px">
+  <div class="ph">
+    <h2>🗂️ Resources</h2>
+    <div style="display:flex;gap:7px;align-items:center">
+      <button class="tsmb" onclick="loadRes()">🔄 Refresh</button>
+      <button class="px" onclick="cl('resources')">✕</button>
+    </div>
+  </div>
+  <div class="pb">
+    <p style="font-size:.76rem;color:var(--tx2);font-family:var(--fm);margin-bottom:12px">Photos and audio saved by AryterLink tools are stored here.</p>
+    <div id="res-out"><div class="res-empty">Loading...</div></div>
+  </div>
+</div></div>
+
+<!-- Terminal -->
+<div class="ov" id="p-terminal"><div class="panel" style="max-width:720px">
+  <div class="ph">
+    <h2>💻 Terminal</h2>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="tsmb" onclick="termClear()">Clear</button>
+      <button class="tsmb" onclick="termHome()">~ Home</button>
+      <button class="px" onclick="cl('terminal')">✕</button>
+    </div>
+  </div>
+  <div class="pb" style="padding:0">
+    <div class="term-panel">
+      <div class="term-topbar">
+        <span class="term-cwd" id="term-cwd">__INITIAL_CWD__</span>
+        <div class="term-btns"><button class="tsmb" onclick="termClear()">⌫ Clear</button></div>
+      </div>
+      <div class="term-out" id="term-out"></div>
+      <div class="term-prompt-row">
+        <span class="term-ps1" id="term-ps1">$ </span>
+        <input class="term-input" id="term-in" type="text" placeholder="enter command..."
+               autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+               onkeydown="termKey(event)">
+        <button class="term-go" onclick="termRun()">▶</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ════════ SCRIPT ════════ -->
+<script>
+/* XSS-safe */
+const E=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const fmt_size=b=>b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/1048576).toFixed(1)+'MB';
+const fmt_time=ts=>new Date(ts*1000).toLocaleString();
+
+/* Theme */
+const THEMES=['dark','eye','light'],TL={'dark':'🌙 DARK','eye':'🟡 EYE','light':'☀ LIGHT'};
+let ti=0;
+function cycleTheme(){document.body.classList.remove(...THEMES);ti=(ti+1)%3;document.body.classList.add(THEMES[ti]);document.getElementById('themeBtn').textContent=TL[THEMES[ti]];localStorage.setItem('al_t',ti)}
+(()=>{const s=localStorage.getItem('al_t');if(s){ti=(parseInt(s)-1+3)%3;cycleTheme()}})();
+
+/* Panel */
+function op(id){document.getElementById('p-'+id).classList.add('on');if(id==='tts')loadTTSEngines();if(id==='terminal'){setTimeout(()=>document.getElementById('term-in').focus(),100)}if(id==='resources')loadRes()}
+function cl(id){document.getElementById('p-'+id).classList.remove('on')}
+document.querySelectorAll('.ov').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('on')}));
+
+/* Toast */
+function toast(msg,type='ok'){const el=document.createElement('div');el.className='xtoast '+type;el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),3000)}
+
+/* API */
+async function api(path,data={}){
+  try{
+    const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(r.status===401){location.href='/';return null}
+    return await r.json()
+  }catch(e){toast('Network error','err');return null}
+}
+
+const spin=()=>'<span class="spin"></span>';
+const loading=id=>{document.getElementById(id).innerHTML=`<div class="rb">${spin()} Loading...</div>`};
+
+/* ══ BATTERY ══ */
+async function loadBattery(){
+  loading('bat-out');
+  const d=await api('/api/battery');if(!d)return;
+  if(!d.success){document.getElementById('bat-out').innerHTML=`<div class="rb">${E(d.output)}</div>`;return}
+  const b=d.data,pct=b.percentage??b.level??'?';
+  const rows=[
+    ['🔋 Level',`<span class="badge ${pct>50?'bg_g':pct>20?'bg_y':'bg_r'}">${E(pct)}%</span>`],
+    ['❤️ Health',`<span class="badge ${b.health==='GOOD'?'bg_g':'bg_y'}">${E(b.health??'N/A')}</span>`],
+    ['⚡ Status',`<span class="badge ${(b.status||'').includes('CHARG')?'bg_b':'bg_y'}">${E(b.status??'N/A')}</span>`],
+    ['🔌 Plugged',E(b.plugged??'N/A')],['🌡️ Temp',b.temperature?E(b.temperature)+'°C':'N/A'],
+    ['⚡ Voltage',b.voltage?E(b.voltage)+'mV':'N/A'],['🔄 Cycles',E(b.cycle??'N/A')],['💡 Tech',E(b.technology??'N/A')],
+  ];
+  document.getElementById('bat-out').innerHTML=`<div class="rb"><table class="rt">${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>`;
+}
+
+/* ══ FINGERPRINT ══ */
+async function scanFingerprint(){
+  const btn=document.getElementById('fp-scan-btn');
+  btn.disabled=true;btn.textContent='⏳ Waiting for touch...';
+  document.getElementById('fp-out').innerHTML=`<div class="fp-result pending"><div class="fp-icon">🫆</div><div class="fp-label pending">WAITING FOR FINGERPRINT</div><div class="fp-sub">Touch the sensor on your device</div></div>`;
+  const d=await api('/api/fingerprint');
+  btn.disabled=false;btn.textContent='🫆 Scan Fingerprint';
+  if(!d){document.getElementById('fp-out').innerHTML=`<div class="fp-result failure"><div class="fp-icon">❌</div><div class="fp-label failure">NETWORK ERROR</div></div>`;return}
+  if(!d.success){document.getElementById('fp-out').innerHTML=`<div class="fp-result failure"><div class="fp-icon">❌</div><div class="fp-label failure">COMMAND FAILED</div><div class="fp-sub">${E(d.output)}</div></div>`;return}
+  const ok=d.authenticated;
+  const fails=d.failed_attempts>0?`<div class="fp-sub">Failed attempts: ${E(d.failed_attempts)}</div>`:'';
+  const errs=d.errors&&d.errors.length?`<div class="fp-sub">Errors: ${E(d.errors.join(', '))}</div>`:'';
+  document.getElementById('fp-out').innerHTML=`
+    <div class="fp-result ${ok?'success':'failure'}">
+      <div class="fp-icon">${ok?'✅':'❌'}</div>
+      <div class="fp-label ${ok?'success':'failure'}">${ok?'AUTHENTICATION SUCCESS':'AUTHENTICATION FAILED'}</div>
+      <div class="fp-sub">${E(d.auth_result)}</div>
+      ${fails}${errs}
+    </div>`;
+}
+
+/* ══ BRIGHTNESS ══ */
+function brightUpdate(val){
+  document.getElementById('bright-val').textContent=val;
+  document.getElementById('bright-pct').textContent=Math.round(val/255*100)+'%';
+}
+function brightPreset(val){document.getElementById('bright-slider').value=val;brightUpdate(val)}
+async function setBrightness(){
+  const level=parseInt(document.getElementById('bright-slider').value);
+  const d=await api('/api/brightness',{level});
+  if(!d)return;
+  document.getElementById('bright-out').innerHTML=`<div class="rb">${d.success?'✅ Brightness set to '+E(level)+' ('+Math.round(level/255*100)+'%)':'❌ '+E(d.output)}</div>`;
+  if(d.success)toast('Brightness updated ☀️');
+}
+
+/* ══ SMS ══ */
+function smsTab(t){document.getElementById('sms-read').style.display=t==='read'?'block':'none';document.getElementById('sms-send').style.display=t==='send'?'block':'none'}
+document.getElementById('sms-msg').addEventListener('input',function(){document.getElementById('sms-cc').textContent=this.value.length+' chars'});
+async function loadSms(){
+  const lim=document.getElementById('sms-limit').value||10;
+  const el=document.getElementById('sms-out');el.style.display='block';el.innerHTML=spin();
+  const d=await api('/api/sms/list',{limit:parseInt(lim)});if(!d)return;
+  if(!d.success){el.innerHTML=`<div style="padding:12px">${E(d.output)}</div>`;return}
+  const msgs=d.data||[];
+  el.innerHTML=msgs.length?msgs.map(m=>`<div class="sms-item"><span class="sms-s">${E(m.address||m.sender||'?')}</span><span class="sms-t">${E(m.date||m.received||'')}</span><div class="sms-b">${E(m.body||m.message||'')}</div></div>`).join(''):'<div style="padding:12px">No messages.</div>';
+}
+async function sendSms(){
+  const number=document.getElementById('sms-to').value.trim(),message=document.getElementById('sms-msg').value.trim();
+  if(!number||!message){toast('Number and message required','err');return}
+  const d=await api('/api/sms/send',{number,message});if(!d)return;
+  toast(d.success?'SMS sent 📤':'Failed: '+d.output,d.success?'ok':'err');
+}
+
+/* ══ TORCH ══ */
+let torchOn=false;
+async function toggleTorch(){torchOn=!torchOn;document.getElementById('torch-btn').classList.toggle('on',torchOn);document.getElementById('torch-st').textContent=torchOn?'🔦 TORCH ON':'TORCH OFF';await api('/api/torch',{state:torchOn?'on':'off'})}
+
+/* ══ CALL LOG ══ */
+async function loadCallLog(){
+  loading('clog-out');const d=await api('/api/call-log');if(!d)return;
+  if(!d.success){document.getElementById('clog-out').innerHTML=`<div class="rb">${E(d.output)}</div>`;return}
+  const calls=d.data||[];const icon=t=>t==='INCOMING'?'📲':t==='OUTGOING'?'📤':'❌';
+  document.getElementById('clog-out').innerHTML=calls.length?`<div class="rb" style="padding:0;max-height:340px;overflow-y:auto"><table class="rt">${calls.map(c=>`<tr><td>${icon(c.type)} ${E(c.type||'')}</td><td style="font-family:var(--fm)">${E(c.number||c.phone_number||'?')}</td><td>${c.duration!=null?E(c.duration)+'s':'?'}</td></tr>`).join('')}</table></div>`:'<div class="rb">No history.</div>';
+}
+
+/* ══ MAKE CALL ══ */
+async function makeCall(){
+  const num=document.getElementById('call-num').value.trim();if(!num){toast('Enter a number','err');return}
+  document.getElementById('call-out').innerHTML=`<div class="rb">${spin()} Initiating...</div>`;
+  const d=await api('/api/call',{number:num});if(!d)return;
+  document.getElementById('call-out').innerHTML=`<div class="rb">${d.success?'✅ Initiated':'❌ '+E(d.output)}</div>`;
+}
+
+/* ══ CONTACTS ══ */
+let allContacts=[];
+async function loadContacts(){
+  document.getElementById('contacts-out').innerHTML=`<div class="rb">${spin()}</div>`;
+  const d=await api('/api/contacts');if(!d)return;
+  if(!d.success){document.getElementById('contacts-out').innerHTML=`<div class="rb">${E(d.output)}</div>`;return}
+  allContacts=d.data||[];renderContacts(allContacts);
+}
+function renderContacts(list){
+  document.getElementById('contacts-out').innerHTML=list.length?`<div class="rb" style="padding:0;max-height:340px;overflow-y:auto">${list.slice(0,150).map(c=>{const name=c.name||'Unknown',num=c.number||c.phone||'',init=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();return`<div class="ci"><div class="ca">${E(init)}</div><div><div class="cn">${E(name)}</div><div class="cp">${E(num)}</div></div></div>`}).join('')}</div>`:'<div class="rb">No contacts.</div>';
+}
+function filterContacts(){const q=document.getElementById('contact-q').value.toLowerCase();renderContacts(allContacts.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.number||'').includes(q)))}
+
+/* ══ LOCATION ══ */
+async function loadLoc(){
+  document.getElementById('loc-out').innerHTML=`<div class="rb">${spin()} Getting GPS...</div>`;
+  const d=await api('/api/location');if(!d)return;
+  if(!d.success){document.getElementById('loc-out').innerHTML=`<div class="rb">${E(d.output)}</div>`;return}
+  const loc=d.data,lat=loc.latitude??loc.lat,lon=loc.longitude??loc.lon??loc.lng;
+  document.getElementById('loc-out').innerHTML=`<div class="rb"><table class="rt">
+    <tr><td>📍 Latitude</td><td>${E(lat)}</td></tr><tr><td>📍 Longitude</td><td>${E(lon)}</td></tr>
+    <tr><td>🎯 Accuracy</td><td>${loc.accuracy?E(loc.accuracy)+'m':'N/A'}</td></tr>
+    <tr><td>🏔 Altitude</td><td>${loc.altitude?E(loc.altitude)+'m':'N/A'}</td></tr>
+    <tr><td>🚀 Speed</td><td>${loc.speed?E(loc.speed)+'m/s':'N/A'}</td></tr>
+    <tr><td>📡 Provider</td><td>${E(loc.provider??'N/A')}</td></tr>
+  </table><a class="mlink" href="https://maps.google.com?q=${encodeURIComponent(lat)},${encodeURIComponent(lon)}" target="_blank" rel="noopener">🗺 Google Maps</a></div>`;
+}
+
+/* ══ CLIPBOARD ══ */
+async function getClip(){const d=await api('/api/clipboard/get');if(!d)return;document.getElementById('clip-get-out').innerHTML=`<div class="rb">${E(d.content||'(empty)')}</div>`}
+async function setClip(){await api('/api/clipboard/set',{text:document.getElementById('clip-text').value});toast('Clipboard updated ✅')}
+
+/* ══ WIFI ══ */
+async function loadWifiInfo(){
+  loading('winfo-out');const d=await api('/api/wifi/info');if(!d)return;
+  if(!d.success){document.getElementById('winfo-out').innerHTML=`<div class="rb">${E(d.output)}</div>`;return}
+  const w=d.data;
+  document.getElementById('winfo-out').innerHTML=`<div class="rb"><table class="rt">
+    <tr><td>📶 SSID</td><td>${E(w.ssid??'N/A')}</td></tr><tr><td>🌐 IP</td><td>${E(w.ip??w.ip_address??'N/A')}</td></tr>
+    <tr><td>📡 BSSID</td><td>${E(w.bssid??'N/A')}</td></tr>
+    <tr><td>📊 RSSI</td><td>${w.rssi!=null?E(w.rssi)+' dBm':'N/A'}</td></tr>
+    <tr><td>⚡ Speed</td><td>${w.link_speed_mbps?E(w.link_speed_mbps)+' Mbps':'N/A'}</td></tr>
+  </table></div>`;
+}
+async function loadWifiScan(){
+  loading('wscan-out');const d=await api('/api/wifi/scan');if(!d)return;
+  if(!d.success){document.getElementById('wscan-out').innerHTML=`<div class="rb">${E(d.output)}</div>`;return}
+  const nets=d.data||[];
+  document.getElementById('wscan-out').innerHTML=nets.length?`<div class="rb" style="padding:0;max-height:300px;overflow-y:auto">${nets.map(n=>`<div class="wi"><div><div style="font-weight:600">${E(n.ssid||'Hidden')}</div><div class="wsig">${E(n.bssid||'')}</div></div><span class="badge ${(n.rssi??n.level??0)>-60?'bg_g':(n.rssi??n.level??0)>-80?'bg_y':'bg_r'}">${E(n.rssi??n.level??'?')} dBm</span></div>`).join('')}</div>`:'<div class="rb">No networks.</div>';
+}
+async function wifiToggle(state){const d=await api('/api/wifi/toggle',{state:String(state)});if(!d)return;document.getElementById('wtog-out').innerHTML=`<div class="rb">WiFi ${state?'enabled ✅':'disabled ❌'}</div>`}
+
+/* ══ NOTIFICATION ══ */
+async function postNotif(){
+  const d=await api('/api/notification',{title:document.getElementById('notif-title').value,content:document.getElementById('notif-body').value,id:parseInt(document.getElementById('notif-id').value)||42});
+  if(!d)return;document.getElementById('notif-out').innerHTML=`<div class="rb">${d.success?'✅ Posted':'❌ '+E(d.output)}</div>`;
+}
+async function removeNotif(){await api('/api/notification/remove',{id:parseInt(document.getElementById('notif-id').value)||42});document.getElementById('notif-out').innerHTML='<div class="rb">✅ Removed</div>'}
+
+/* ══ TTS ══ */
+async function loadTTSEngines(){
+  const sel=document.getElementById('tts-engine');
+  const d=await api('/api/tts/engines');
+  if(!d||!d.engines||!d.engines.length){sel.innerHTML='<option value="termux">Termux TTS</option><option value="espeak">eSpeak-NG</option>';return}
+  sel.innerHTML=d.engines.map(e=>`<option value="${E(e.id)}">${E(e.label)} [${E(e.type)}]</option>`).join('');
+  if(!d.engines.find(e=>e.id==='espeak'))sel.innerHTML+='<option value="espeak">eSpeak-NG</option>';
+}
+async function speak(){
+  const text=document.getElementById('tts-text').value.trim(),engine=document.getElementById('tts-engine').value,rate=parseFloat(document.getElementById('tts-rate').value)||1.0;
+  if(!text){toast('Enter text','err');return}
+  document.getElementById('tts-out').innerHTML=`<div class="rb">${spin()} Speaking via ${E(engine)}...</div>`;
+  const d=await api('/api/tts',{text,engine,rate});if(!d)return;
+  document.getElementById('tts-out').innerHTML=`<div class="rb">${d.success?'✅ Spoken via '+E(d.engine):'❌ '+E(d.output||'Error')}</div>`;
+}
+
+/* ══ TOAST ══ */
+async function sendToast(){
+  const msg=document.getElementById('toast-msg').value.trim();if(!msg){toast('Enter message','err');return}
+  await api('/api/toast',{message:msg,bg:document.getElementById('toast-bg').value});toast('Toast shown 🍞');
+}
+
+/* ══ VIBRATE ══ */
+async function vib(preset){const ms=preset||parseInt(document.getElementById('vib-ms').value)||1000;const force=document.getElementById('vib-force').checked;await api('/api/vibrate',{ms,force});toast(`Vibrating ${ms}ms 📳`)}
+
+/* ══ CAMERA ══ */
+async function takePhoto(){
+  const cam=parseInt(document.getElementById('cam-id').value)||0;
+  document.getElementById('cam-out').innerHTML=`<div class="rb">${spin()} Capturing...</div>`;
+  const d=await api('/api/camera/photo',{camera:cam});if(!d)return;
+  if(d.success){document.getElementById('cam-out').innerHTML=`<div class="rb">📷 Saved to resources as <code style="color:var(--ac)">${E(d.file)}</code><br><button class="btn bp" style="margin-top:10px;padding:6px 13px" onclick="cl('camera');op('resources')">View in Resources →</button></div>`}
+  else{document.getElementById('cam-out').innerHTML=`<div class="rb">❌ ${E(d.output)}</div>`}
+}
+
+/* ══ AUDIO RECORD ══ */
+async function recordAudio(){
+  const secs=parseInt(document.getElementById('audio-s').value)||5;
+  document.getElementById('audio-out').innerHTML=`<div class="rb">${spin()} Recording ${secs}s...</div>`;
+  const d=await api('/api/audio/record',{seconds:secs});if(!d)return;
+  if(d.success){document.getElementById('audio-out').innerHTML=`<div class="rb">🎤 Saved as <code style="color:var(--ac)">${E(d.file)}</code><br><button class="btn bp" style="margin-top:10px;padding:6px 13px" onclick="cl('audio');op('resources')">View in Resources →</button></div>`}
+  else{document.getElementById('audio-out').innerHTML=`<div class="rb">❌ ${E(d.output)}</div>`}
+}
+
+/* ══ WAKE LOCK ══ */
+async function wakeLock(action){await api('/api/wakelock',{action});document.getElementById('wl-out').innerHTML=`<div class="rb">${action==='lock'?'🔒 Acquired':'🔓 Released'}</div>`}
+
+/* ══ OPEN URL / DOWNLOAD ══ */
+async function openUrl(){const url=document.getElementById('ourl').value.trim();if(!url){toast('Enter URL','err');return}await api('/api/open-url',{url});toast('Opening in browser 🌐')}
+async function startDl(){
+  const url=document.getElementById('dl-url').value.trim();if(!url){toast('Enter URL','err');return}
+  const method=document.querySelector('input[name="dl-method"]:checked').value;
+  document.getElementById('dl-out').innerHTML=`<div class="rb">${spin()} Downloading via ${E(method)}...</div>`;
+  const d=await api('/api/download',{url,method});if(!d)return;
+  document.getElementById('dl-out').innerHTML=`<div class="rb">${d.success?'✅ Download started via '+E(method):'❌ '+E(d.output)}</div>`;
+}
+
+/* ══ SENSORS ══ */
+async function loadSensors(){
+  loading('sensor-out');const d=await api('/api/sensor/list');if(!d)return;
+  if(!d.success){document.getElementById('sensor-out').innerHTML=`<div class="rb">${E(d.output||'Error')}</div>`;return}
+  const list=d.sensors||[];
+  if(!list.length){document.getElementById('sensor-out').innerHTML='<div class="rb">No sensors found.</div>';return}
+  document.getElementById('sensor-out').innerHTML=`<div class="rb"><table class="rt">
+    <tr><td colspan="2" style="color:var(--tx2);font-size:.7rem;letter-spacing:2px;padding-bottom:10px">${list.length} SENSOR${list.length!==1?'S':''} DETECTED</td></tr>
+    ${list.map((s,i)=>`<tr><td style="color:var(--mu)">#${i+1}</td><td>${E(s)}</td></tr>`).join('')}
+  </table></div>`;
+}
+
+/* ══ RESOURCES ══ */
+async function loadRes(){
+  document.getElementById('res-out').innerHTML=`<div class="res-empty">${spin()} Loading files...</div>`;
+  const d=await api('/api/res/list');if(!d)return;
+  const files=d.files||[];
+  if(!files.length){document.getElementById('res-out').innerHTML='<div class="res-empty">No files yet. Take a photo or record audio to see them here.</div>';return}
+  document.getElementById('res-out').innerHTML=`<div class="res-grid">${files.map(f=>{
+    const thumb=f.type==='image'
+      ?`<img class="res-thumb" src="/res/${E(f.name)}" alt="${E(f.name)}" loading="lazy" onerror="this.style.display='none'">`
+      :`<div class="res-audio-thumb">🎵</div>`;
+    return`<div class="res-card">
+      ${thumb}
+      <div class="res-info">
+        <div class="res-name" title="${E(f.name)}">${E(f.name)}</div>
+        <div class="res-size">${fmt_size(f.size)} · ${fmt_time(f.mtime)}</div>
+        <div class="res-actions">
+          <a class="res-btn res-dl" href="/res/${E(f.name)}?download" download="${E(f.name)}">⬇ Download</a>
+          <button class="res-btn res-del" onclick="deleteRes('${E(f.name)}')">🗑 Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+async function deleteRes(name){
+  if(!confirm('Delete '+name+'?'))return;
+  const d=await api('/api/res/delete',{name});if(!d)return;
+  toast(d.success?'Deleted':'Error: '+d.output,d.success?'ok':'err');
+  loadRes();
+}
+
+/* ══ TERMINAL ══ */
+const TERM_HOME='__TERMUX_HOME__';
+let termCwd='__INITIAL_CWD__',termHist=[],termHistIdx=-1;
+function termPS1(cwd){const d=cwd.startsWith(TERM_HOME)?'~'+cwd.slice(TERM_HOME.length):cwd;return`${d} $`}
+function termSetCwd(cwd){termCwd=cwd;document.getElementById('term-cwd').textContent=cwd;document.getElementById('term-ps1').textContent=termPS1(cwd)}
+function termLine(text,cls){const out=document.getElementById('term-out');const d=document.createElement('div');d.className=cls;d.textContent=text;out.appendChild(d);out.scrollTop=out.scrollHeight}
+function termClear(){document.getElementById('term-out').innerHTML='';termLine('Terminal cleared.','li')}
+function termHome(){document.getElementById('term-in').value='cd ~';termRun()}
+async function termRun(){
+  const input=document.getElementById('term-in'),cmd=input.value.trim();if(!cmd)return;
+  input.value='';termHist.unshift(cmd);if(termHist.length>100)termHist.pop();termHistIdx=-1;
+  termLine(termPS1(termCwd)+' '+cmd,'lc');
+  const d=await api('/api/terminal',{cmd});if(!d){termLine('Network error','le');return}
+  if(d.cwd)termSetCwd(d.cwd);
+  if(d.output)d.output.split('\n').forEach(l=>termLine(l,d.success?'lo':'le'));
+}
+function termKey(e){
+  const inp=document.getElementById('term-in');
+  if(e.key==='Enter'){e.preventDefault();termRun()}
+  else if(e.key==='ArrowUp'){e.preventDefault();if(termHistIdx<termHist.length-1){termHistIdx++;inp.value=termHist[termHistIdx]}}
+  else if(e.key==='ArrowDown'){e.preventDefault();if(termHistIdx>0){termHistIdx--;inp.value=termHist[termHistIdx]}else{termHistIdx=-1;inp.value=''}}
+  else if(e.ctrlKey&&e.key==='l'){e.preventDefault();termClear()}
+  else if(e.ctrlKey&&e.key==='c'){e.preventDefault();termLine('^C','li');inp.value=''}
+}
+// Init terminal
+termSetCwd(termCwd);
+termLine('AryterLink Terminal — type commands below','li');
+termLine('↑↓ history  |  Ctrl+L clear  |  cd to navigate','li');
+termLine('','li');
+</script>
+</body>
+</html>
