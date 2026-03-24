@@ -230,9 +230,24 @@ Password: admin123
 
 To access your AryterLink panel from outside your home network — from any browser, anywhere on earth — use a free tunnel. These create a temporary public HTTPS URL that forwards traffic to your local server.
 
-### Option A — Cloudflare Tunnel
-
 ```bash
+
+### Why Choose Tailscale Over Cloudflare Tunnel?
+
+| Feature/Aspect         | **Tailscale**                          | **Cloudflare Tunnel**                |
+|------------------------|----------------------------------------|---------------------------------------|
+| **Privacy & Security** | Your data is encrypted and only accessible to devices you authorize. | Your data passes through Cloudflare’s infrastructure, even if it’s encrypted. |
+| **Sensitive Data**     | SMS, contacts, and other sensitive data stay on your personal network, not exposed to third parties. | SMS, contacts, and other data may be exposed to Cloudflare’s servers during transit. |
+| **Control**            | You control the entire network; no third-party involvement. | Requires trusting Cloudflare with your traffic. |
+| **Ease of Use**        | Simple setup, no need to open ports or manage DNS. | Requires managing tunnels and DNS records. |
+
+**Recommendation:** For applications handling sensitive data (like SMS and contacts), Tailscale is the safer and more private option.
+
+### Option A — TailScale
+download from here : https://tailscale.com/download
+
+### Option B — Cloudflare Tunnel
+
 # Install cloudflared
 pkg install cloudflared -y
 
@@ -242,7 +257,7 @@ cloudflared tunnel --url http://localhost:8080
 
 You get a URL like: `https://something-random.trycloudflare.com`
 
-### Option B — ngrok
+### Option C — ngrok
 
 ```bash
 # Install ngrok
