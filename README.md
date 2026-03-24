@@ -230,8 +230,6 @@ Password: admin123
 
 To access your AryterLink panel from outside your home network — from any browser, anywhere on earth — use a free tunnel. These create a temporary public HTTPS URL that forwards traffic to your local server.
 
-```bash
-
 ### Why Choose Tailscale Over Cloudflare Tunnel?
 
 | Feature/Aspect         | **Tailscale**                          | **Cloudflare Tunnel**                |
