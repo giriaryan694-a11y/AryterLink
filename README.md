@@ -247,14 +247,16 @@ download from here : https://tailscale.com/download
 ### Option B — Cloudflare Tunnel
 
 # Install cloudflared
-pkg install cloudflared -y
-
-# Start tunnel (AryterLink must be running on port 8080)
-cloudflared tunnel --url http://localhost:8080
 ```
+pkg install cloudflared -y
+```
+# Start tunnel (AryterLink must be running on port 8080)
+```
+cloudflared tunnel --url http://localhost:8080
+
 
 You get a URL like: `https://something-random.trycloudflare.com`
-
+```
 ### Option C — ngrok
 
 ```bash
